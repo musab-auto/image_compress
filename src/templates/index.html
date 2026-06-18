@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spektrum &mdash; Kompresi Gambar dengan PCA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="hero">
+      <p class="eyebrow">ALJABAR LINEAR &mdash; DEKOMPOSISI NILAI SINGULAR</p>
+      <h1 class="hero-title">Sebagian besar gambar<br>hidup di segelintir angka.</h1>
+      <p class="hero-sub">Tiap gambar berwarna adalah tiga matriks. PCA mengurutkan komponennya dari yang paling penting, lalu membuang sisanya &mdash; gambarnya tetap terlihat sama, datanya jauh lebih kecil.</p>
+
+      <div class="hero-chart" aria-hidden="true">
+        <canvas id="heroCanvas"></canvas>
+      </div>
+    </header>
+
+    <main>
+      <section class="panel" id="uploadPanel">
+        <p class="eyebrow">01 &mdash; INPUT</p>
+        <div class="dropzone" id="dropzone" tabindex="0">
+          <input type="file" id="fileInput" accept="image/*" hidden>
+          <div class="dropzone-content" id="dropzoneEmpty">
+            <p><strong>Jatuhkan gambar di sini</strong>, atau klik untuk memilih file.</p>
+            <span class="hint">PNG &middot; JPG &middot; BMP &middot; WEBP</span>
+          </div>
+          <img id="previewImage" class="dropzone-preview" hidden alt="Preview gambar">
+        </div>
+        <div class="upload-meta" id="uploadMeta" hidden></div>
+        <p class="resize-notice" id="resizeNotice" hidden></p>
+      </section>
+
+      <section class="panel" id="rankPanel" hidden>
+        <p class="eyebrow">02 &mdash; PILIH RANK</p>
+
+        <div class="mode-toggle" role="tablist">
+          <button type="button" class="mode-tab active" data-mode="manual" id="manualTabBtn">Manual</button>
+          <button type="button" class="mode-tab" data-mode="auto" id="autoTabBtn">Otomatis</button>
+        </div>
+
+        <div class="spectrum-readout">
+          <div class="readout-figure">
+            <span class="readout-value" id="energyValue">&mdash;</span>
+            <span class="readout-label">% energi dipertahankan</span>
+          </div>
+          <div class="readout-figure readout-figure--mono">
+            <span class="readout-value readout-value--mono"><span id="kReadout">&mdash;</span><span class="readout-of"> / <span id="kMaxReadout">&mdash;</span></span></span>
+            <span class="readout-label">nilai singular (k) dipakai</span>
+          </div>
+        </div>
+
+        <div class="spectrum-chart" id="spectrumChart">
+          <canvas id="spectrumCanvas"></canvas>
+        </div>
+
+        <p class="panel-hint" id="manualHint">Tarik garis pada grafik untuk memilih jumlah komponen yang disimpan.</p>
+
+        <div class="quality-row" id="autoPanel" hidden>
+          <button type="button" class="quality-tick" data-quality="high">
+            <strong>Tinggi</strong>
+            <span>SSIM &ge; 0.98</span>
+          </button>
+          <button type="button" class="quality-tick selected" data-quality="balanced">
+            <strong>Seimbang</strong>
+            <span>SSIM &ge; 0.95</span>
+          </button>
+          <button type="button" class="quality-tick" data-quality="aggressive">
+            <strong>Maksimal</strong>
+            <span>SSIM &ge; 0.90</span>
+          </button>
+        </div>
+
+        <button type="button" class="primary-btn" id="compressBtn">
+          <span id="compressBtnLabel">Kompres Gambar</span>
+          <span class="spinner" id="compressSpinner" hidden></span>
+        </button>
+        <p class="error-text" id="errorText" hidden></p>
+      </section>
+
+      <section class="panel" id="resultsPanel" hidden>
+        <p class="eyebrow">03 &mdash; HASIL</p>
+
+        <div class="compare-grid">
+          <div class="compare-item">
+            <span class="compare-label">Sebelum</span>
+            <img id="beforeImage" alt="Gambar asli">
+          </div>
+          <div class="compare-item">
+            <span class="compare-label">Setelah</span>
+            <img id="afterImage" alt="Gambar hasil kompresi">
+          </div>
+        </div>
+
+        <div class="metrics-readout" id="metricsGrid"></div>
+
+        <button type="button" class="primary-btn secondary" id="downloadBtn">Unduh PNG</button>
+      </section>
+    </main>
+
+    <footer>
+      <p>Dibangun dengan SVD &middot; NumPy &amp; FastAPI</p>
+    </footer>
+  </div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>
